@@ -1,4 +1,3 @@
-// index.js
 require('dotenv').config();
 const express = require('express');
 const helmet = require('helmet');
@@ -17,8 +16,8 @@ const API_PREFIX = '/api/v1';
 
 const swaggerDocument = YAML.load('./docs/swagger.yaml');
 
-app.use(helmet()); // ✅ Requirement: Helmet
-app.use(cors());   // ✅ Requirement: CORS
+app.use(helmet()); 
+app.use(cors());   
 app.use(express.json());
 
 app.use(API_PREFIX, authenticate);
@@ -40,31 +39,24 @@ if (!MONGODB_URI) {
 
 async function connectDB() {
     try {
-        // Options recommended by Mongoose for connection stability
         const connectionOptions = {
             useNewUrlParser: true,
             useUnifiedTopology: true,
-            serverSelectionTimeoutMS: 5000, // Timeout after 5s if unable to select a server
+            serverSelectionTimeoutMS: 5000, 
         };
 
         await mongoose.connect(MONGODB_URI, connectionOptions);
 
         console.log("✅ Successfully connected to MongoDB.");
-
-        // NOTE: You can define your Mongoose Schema and start CRUD operations here
-        // Example: 
-        // const User = mongoose.model('User', { name: String, age: Number });
-        // await User.create({ name: 'Jane Doe', age: 30 });
         
     } catch (error) {
         console.error("❌ MongoDB connection failed:", error.message);
-        // Exit process with failure
         process.exit(1); 
     }
 }
 
 const startApp = async () => {
-    await connectDB(); // Connect to MongoDB
+    await connectDB(); 
     
     app.listen(PORT, () => {
         console.log(`🚀 Library API running at http://localhost:${PORT}${API_PREFIX}/books`);
@@ -72,11 +64,9 @@ const startApp = async () => {
     });
 };
 
-// --------------------
 // Mongoose Book schema
-// --------------------
 const bookSchema = new mongoose.Schema({
-  id: { type: Number, unique: true, index: true }, // numeric id for backwards compatibility
+  id: { type: Number, unique: true, index: true }, 
   title: { type: String, required: [true, 'title is required'] },
   author: { type: String, required: [true, 'author is required'] },
   available: { type: Boolean, default: true },
@@ -86,11 +76,8 @@ const bookSchema = new mongoose.Schema({
 
 const Book = mongoose.model('Book', bookSchema);
 
-// --------------------
 // Helpers
-// --------------------
 async function nextId() {
-  // find the highest numeric id and add 1
   const doc = await Book.findOne().sort({ id: -1 }).select('id').lean();
   return doc && typeof doc.id === 'number' ? doc.id + 1 : 1;
 }
@@ -98,10 +85,6 @@ async function nextId() {
 function isValidNumberId(id) {
   return /^\d+$/.test(String(id));
 }
-
-// --------------------
-// Routes (same as file-based API)
-// --------------------
 
 // GET all books (with optional pagination)
 app.get(`${API_PREFIX}/books`, async (req, res) => {
@@ -157,7 +140,6 @@ app.post(`${API_PREFIX}/books`, async (req, res) => {
       const errors = Object.values(err.errors).map(e => e.message);
       return res.status(400).json({ message: 'Validation failed', errors });
     }
-    // duplicate id (rare race) or other duplicate key
     if (err.name === 'MongoServerError' && err.code === 11000) {
       return res.status(409).json({ message: 'Duplicate key', details: err.keyValue });
     }
@@ -165,7 +147,7 @@ app.post(`${API_PREFIX}/books`, async (req, res) => {
   }
 });
 
-// PUT update existing book (by numeric id)
+// PUT update existing book
 app.put(`${API_PREFIX}/books/:id`, async (req, res) => {
   try {
     const idParam = req.params.id;
@@ -206,7 +188,7 @@ app.delete(`${API_PREFIX}/books/:id`, async (req, res) => {
   }
 });
 
-// Borrow a book (POST) - also accept PUT as alias
+// Borrow a book 
 async function borrowHandler(req, res) {
   try {
     const idParam = req.params.id;
@@ -231,9 +213,9 @@ async function borrowHandler(req, res) {
   }
 }
 app.post(`${API_PREFIX}/borrow/:id`, borrowHandler);
-app.put(`${API_PREFIX}/borrow/:id`, borrowHandler); // alias
+app.put(`${API_PREFIX}/borrow/:id`, borrowHandler);
 
-// Return a book (POST) - also accept PUT as alias
+// Return a book 
 async function returnHandler(req, res) {
   try {
     const idParam = req.params.id;
@@ -255,11 +237,9 @@ async function returnHandler(req, res) {
   }
 }
 app.post(`${API_PREFIX}/return/:id`, returnHandler);
-app.put(`${API_PREFIX}/return/:id`, returnHandler); // alias
+app.put(`${API_PREFIX}/return/:id`, returnHandler); 
 
-// --------------------
 // Start server + Mongo
-// --------------------
 async function startServer() {
   const mongoUri = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/library';
   const opts = { useNewUrlParser: true, useUnifiedTopology: true, serverSelectionTimeoutMS: 5000 };
@@ -268,7 +248,7 @@ async function startServer() {
     await mongoose.connect(mongoUri, opts);
     console.log('✅ Connected to MongoDB:', mongoUri);
 
-    // Ensure at least some initial sample books exist if collection empty (optional)
+    // Ensure at least some initial sample books exist if collection empty
     const count = await Book.estimatedDocumentCount();
     if (count === 0) {
       await Book.create([
@@ -283,7 +263,6 @@ async function startServer() {
       console.log(`🚀 Library API running at http://localhost:${PORT}${API_PREFIX}/books`);
     });
 
-    // graceful shutdown
     const shutdown = async () => {
       console.log('🛑 Shutting down...');
       server.close();
