@@ -5,25 +5,19 @@ const cors = require('cors');
 const swaggerUi = require('swagger-ui-express');
 const YAML = require('yamljs');
 const mongoose = require('mongoose');
-
 const connectDB = require('./config/db');
 const bookRoutes = require('./routes/bookRoutes');
 const { authenticate } = require('./middleware/auth');
-
 const app = express();
 const PORT = process.env.PORT || 3000;
 const API_PREFIX = '/api/v1';
-
 const swaggerDocument = YAML.load('./docs/swagger.yaml');
 
 app.use(helmet()); 
 app.use(cors());   
 app.use(express.json());
-
 app.use(API_PREFIX, authenticate);
-
 app.use(API_PREFIX, bookRoutes);
-
 app.use((req, res) => {
     res.status(404).json({ message: `Route not found: ${req.method} ${req.originalUrl}` });
 });
@@ -46,7 +40,6 @@ async function connectDB() {
         };
 
         await mongoose.connect(MONGODB_URI, connectionOptions);
-
         console.log("✅ Successfully connected to MongoDB.");
         
     } catch (error) {
@@ -57,7 +50,6 @@ async function connectDB() {
 
 const startApp = async () => {
     await connectDB(); 
-    
     app.listen(PORT, () => {
         console.log(`🚀 Library API running at http://localhost:${PORT}${API_PREFIX}/books`);
         console.log(`📄 Documentation available at http://localhost:${PORT}/api-docs`);
@@ -109,7 +101,6 @@ app.get(`${API_PREFIX}/books/:id`, async (req, res) => {
   try {
     const idParam = req.params.id;
     if (!isValidNumberId(idParam)) return res.status(400).json({ message: 'Invalid book id (must be numeric)' });
-
     const id = parseInt(idParam);
     const book = await Book.findOne({ id }).lean();
     if (!book) return res.status(404).json({ message: 'Book not found' });
@@ -124,7 +115,6 @@ app.post(`${API_PREFIX}/books`, async (req, res) => {
   try {
     const { title, author, available } = req.body;
     if (!title || !author) return res.status(400).json({ message: 'Title and author are required' });
-
     const newId = await nextId();
     const book = new Book({
       id: newId,
@@ -158,10 +148,8 @@ app.put(`${API_PREFIX}/books/:id`, async (req, res) => {
     if (req.body.title !== undefined) updates.title = req.body.title;
     if (req.body.author !== undefined) updates.author = req.body.author;
     if (req.body.available !== undefined) updates.available = req.body.available;
-
     const book = await Book.findOneAndUpdate({ id }, updates, { new: true, runValidators: true });
     if (!book) return res.status(404).json({ message: 'Book not found' });
-
     res.json({ message: 'Book updated successfully', book });
   } catch (err) {
     if (err.name === 'ValidationError') {
@@ -178,10 +166,8 @@ app.delete(`${API_PREFIX}/books/:id`, async (req, res) => {
     const idParam = req.params.id;
     if (!isValidNumberId(idParam)) return res.status(400).json({ message: 'Invalid book id (must be numeric)' });
     const id = parseInt(idParam);
-
     const doc = await Book.findOneAndDelete({ id });
     if (!doc) return res.status(404).json({ message: 'Book not found' });
-
     res.json({ message: 'Book deleted successfully' });
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -197,7 +183,6 @@ async function borrowHandler(req, res) {
     const { borrower } = req.body;
 
     if (!borrower) return res.status(400).json({ message: 'Borrower name is required' });
-
     const book = await Book.findOne({ id });
     if (!book) return res.status(404).json({ message: 'Book not found' });
     if (!book.available) return res.status(400).json({ message: 'Book is already borrowed' });
@@ -221,16 +206,13 @@ async function returnHandler(req, res) {
     const idParam = req.params.id;
     if (!isValidNumberId(idParam)) return res.status(400).json({ message: 'Invalid book id (must be numeric)' });
     const id = parseInt(idParam);
-
     const book = await Book.findOne({ id });
     if (!book) return res.status(404).json({ message: 'Book not found' });
     if (book.available) return res.status(400).json({ message: 'Book is not currently borrowed' });
-
     book.available = true;
     book.borrower = null;
     book.borrowedAt = null;
     await book.save();
-
     res.json({ message: 'Book returned successfully', book });
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -246,9 +228,7 @@ async function startServer() {
 
   try {
     await mongoose.connect(mongoUri, opts);
-    console.log('✅ Connected to MongoDB:', mongoUri);
-
-    // Ensure at least some initial sample books exist if collection empty
+    console.log('Connected to MongoDB:', mongoUri);
     const count = await Book.estimatedDocumentCount();
     if (count === 0) {
       await Book.create([
@@ -260,11 +240,11 @@ async function startServer() {
     }
 
     const server = app.listen(PORT, () => {
-      console.log(`🚀 Library API running at http://localhost:${PORT}${API_PREFIX}/books`);
+      console.log(`Library API running at http://localhost:${PORT}${API_PREFIX}/books`);
     });
 
     const shutdown = async () => {
-      console.log('🛑 Shutting down...');
+      console.log('Shutting down...');
       server.close();
       await mongoose.disconnect();
       process.exit(0);
@@ -273,7 +253,7 @@ async function startServer() {
     process.on('SIGTERM', shutdown);
 
   } catch (err) {
-    console.error('❌ Failed to connect to MongoDB:', err.message);
+    console.error('Failed to connect to MongoDB:', err.message);
     process.exit(1);
   }
 }
