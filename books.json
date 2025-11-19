@@ -1,9 +1,11 @@
 [
   {
     "id": 1,
-    "title": "The Great Gatsby",
-    "author": "F. Scott Fitzgerald",
-    "available": true
+    "title": "aljun humina",
+    "author": "maam",
+    "available": false,
+    "borrower": "SIJEy",
+    "borrowedAt": "2025-11-19T03:53:48.803Z"
   },
   {
     "id": 2,
@@ -15,7 +17,9 @@
     "id": 3,
     "title": "To Kill a Mockingbird",
     "author": "Harper Lee",
-    "available": true
+    "available": false,
+    "borrower": "Aljun Dalman",
+    "borrowedAt": "2025-11-19T03:53:05.152Z"
   },
   {
     "id": 4,
@@ -31,6 +35,12 @@
   },
   {
     "id": 6,
+    "title": "Brave New World",
+    "author": "Aldous Huxley",
+    "available": false
+  },
+  {
+    "id": 7,
     "title": "Brave New World",
     "author": "Aldous Huxley",
     "available": false

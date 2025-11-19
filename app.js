@@ -1,17 +1,11 @@
 const express = require("express");
 const fs = require("fs");
 const path = require("path");
-
-
 const app = express();
 const PORT = 3000;
-
-
 const DATA_FILE = path.join(__dirname, "books.json");
 
-
 app.use(express.json());
-
 
 // =======================
 // Load data from file
@@ -29,22 +23,18 @@ if (fs.existsSync(DATA_FILE)) {
   fs.writeFileSync(DATA_FILE, JSON.stringify(books, null, 2));
 }
 
-
 function saveBooks() {
   fs.writeFileSync(DATA_FILE, JSON.stringify(books, null, 2));
 }
-
 
 // =======================
 // 📍 ROUTES (with /api/v1 prefix)
 // =======================
 
-
 // ✅ GET – Retrieve all books
 app.get("/api/v1/books", (req, res) => {
   res.json(books);
 });
-
 
 // ✅ GET (single book by ID)
 app.get("/api/v1/books/:id", (req, res) => {
@@ -52,7 +42,6 @@ app.get("/api/v1/books/:id", (req, res) => {
   if (!book) return res.status(404).json({ message: "Book not found" });
   res.json(book);
 });
-
 
 // ✅ POST – Add new book
 app.post("/api/v1/books", (req, res) => {
@@ -71,24 +60,20 @@ app.post("/api/v1/books", (req, res) => {
   res.status(201).json(newBook);
 });
 
-
 // ✅ PUT – Update existing book
 app.put("/api/v1/books/:id", (req, res) => {
   const id = parseInt(req.params.id);
   const book = books.find(b => b.id === id);
   if (!book) return res.status(404).json({ message: "Book not found" });
 
-
   const { title, author, available } = req.body;
   book.title = title ?? book.title;
   book.author = author ?? book.author;
   book.available = available ?? book.available;
 
-
   saveBooks();
   res.json({ message: "Book updated successfully", book });
 });
-
 
 // ✅ DELETE – Remove book
 app.delete("/api/v1/books/:id", (req, res) => {
@@ -96,42 +81,34 @@ app.delete("/api/v1/books/:id", (req, res) => {
   const index = books.findIndex(b => b.id === id);
   if (index === -1) return res.status(404).json({ message: "Book not found" });
 
-
   books.splice(index, 1);
   saveBooks();
   res.json({ message: "Book deleted successfully" });
 });
-
 
 // ✅ POST – Borrow a book
 app.post("/api/v1/borrow/:id", (req, res) => {
   const id = parseInt(req.params.id);
   const { borrower } = req.body;
 
-
   const book = books.find(b => b.id === id);
   if (!book) return res.status(404).json({ message: "Book not found" });
-
 
   if (!book.available) {
     return res.status(400).json({ message: "Book is already borrowed" });
   }
 
-
   if (!borrower) {
     return res.status(400).json({ message: "Borrower name is required" });
   }
-
 
   book.available = false;
   book.borrower = borrower;
   book.borrowedAt = new Date().toISOString();
 
-
   saveBooks();
   res.json({ message: "Book borrowed successfully", book });
 });
-
 
 // ✅ POST – Return a book
 app.post("/api/v1/return/:id", (req, res) => {
@@ -139,21 +116,17 @@ app.post("/api/v1/return/:id", (req, res) => {
   const book = books.find(b => b.id === id);
   if (!book) return res.status(404).json({ message: "Book not found" });
 
-
   if (book.available) {
     return res.status(400).json({ message: "Book is not currently borrowed" });
   }
-
 
   book.available = true;
   delete book.borrower;
   delete book.borrowedAt;
 
-
   saveBooks();
   res.json({ message: "Book returned successfully", book });
 });
-
 
 // =======================
 // Start Server
