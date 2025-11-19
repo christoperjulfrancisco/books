@@ -24,5 +24,13 @@
   },
   "devDependencies": {
     "nodemon": "^3.1.11"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/christoperjulfrancisco/books.git"
+  },
+  "bugs": {
+    "url": "https://github.com/christoperjulfrancisco/books/issues"
+  },
+  "homepage": "https://github.com/christoperjulfrancisco/books#readme"
 }
