@@ -3,13 +3,10 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const helmet = require('helmet');
-const swaggerUI = require('swagger-ui-express');
-const YAML = require('yamljs');
 
 const booksRoutes = require('./routes/books');
 const errorHandler = require('./middleware/errorHandler');
-// optional api key middleware
-const apiKey = require('./middleware/apiKey');
+// const apiKey = require('./middleware/apiKey'); // optional
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -18,10 +15,6 @@ const PORT = process.env.PORT || 3000;
 app.use(helmet());
 app.use(cors());
 app.use(express.json());
-
-// swagger
-const swaggerDocument = YAML.load('./docs/swagger.yaml');
-app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerDocument));
 
 // optional: protect write routes with API key
 // app.use(apiKey);
@@ -45,4 +38,5 @@ async function startServer() {
     console.error('❌ Failed to connect:', err.message);
   }
 }
+
 startServer();
