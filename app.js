@@ -16,7 +16,16 @@ app.use(express.json());
 
 // routes
 app.use('/api/v1/books', booksRoutes);
-app.use('/api/v1', bookRoutes); // Mount your routes
+app.use('/api/v1', bookRoutes); 
+
+// swagger
+const setupSwagger = require('./swagger');
+setupSwagger(app);
+
+app.listen(3000, () => {
+  console.log('Server running on http://localhost:3000');
+  console.log('Swagger docs at http://localhost:3000/api-docs');
+});
 
 // root
 app.get('/', (req, res) => res.send('✅ Library API is running!'));
