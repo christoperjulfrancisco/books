@@ -13,4 +13,4 @@ router.delete('/:id', validateId, ctrl.deleteBook);
 router.post('/borrow/:id', validateId, ctrl.borrowBook);
 router.post('/return/:id', validateId, ctrl.returnBook);
 
-module.exports = router;  // ✅ Must export router directly
+module.exports = router;  

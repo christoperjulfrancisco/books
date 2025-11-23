@@ -3,11 +3,9 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const helmet = require('helmet');
-
 const booksRoutes = require('./routes/books');
 const errorHandler = require('./middleware/errorHandler');
-// const apiKey = require('./middleware/apiKey'); // optional
-
+const bookRoutes = require('./routes/books');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -16,16 +14,14 @@ app.use(helmet());
 app.use(cors());
 app.use(express.json());
 
-// optional: protect write routes with API key
-// app.use(apiKey);
-
 // routes
 app.use('/api/v1/books', booksRoutes);
+app.use('/api/v1', bookRoutes); // Mount your routes
 
 // root
 app.get('/', (req, res) => res.send('✅ Library API is running!'));
 
-// error handler (must be last)
+// error handler
 app.use(errorHandler);
 
 // connect & start

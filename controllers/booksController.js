@@ -27,7 +27,6 @@ exports.getBook = async (req, res, next) => {
 
 exports.updateBook = async (req, res, next) => {
   try {
-    // protect borrow fields
     delete req.body.borrower;
     delete req.body.borrowedAt;
     delete req.body.available;
