@@ -6,11 +6,11 @@ const cors = require('cors');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// ===== Middleware =====
+//Middleware 
 app.use(cors());
 app.use(express.json());
 
-// ===== Mongoose Schema & Model =====
+//Mongoose Schema & Model
 const bookSchema = new mongoose.Schema(
   {
     title: { type: String, required: true, trim: true },
@@ -24,12 +24,12 @@ const bookSchema = new mongoose.Schema(
 
 const Book = mongoose.model('Book', bookSchema);
 
-// ===== Routes =====
+//Routes
 
-// Root route
+//Root route
 app.get('/', (req, res) => res.send('✅ Library API is running!'));
 
-// Create a book
+//Create a book
 app.post('/api/v1/books', async (req, res) => {
   try {
     const book = new Book(req.body);
@@ -40,7 +40,7 @@ app.post('/api/v1/books', async (req, res) => {
   }
 });
 
-// Get all books
+//Get all books
 app.get('/api/v1/books', async (req, res) => {
   try {
     const books = await Book.find().sort({ createdAt: -1 });
@@ -50,7 +50,7 @@ app.get('/api/v1/books', async (req, res) => {
   }
 });
 
-// Get one book by ID
+//Get one book by ID
 app.get('/api/v1/books/:id', async (req, res) => {
   try {
     const book = await Book.findById(req.params.id);
@@ -61,7 +61,7 @@ app.get('/api/v1/books/:id', async (req, res) => {
   }
 });
 
-// Update a book
+//Update a book
 app.put('/api/v1/books/:id', async (req, res) => {
   try {
     const book = await Book.findByIdAndUpdate(req.params.id, req.body, { new: true });
@@ -72,7 +72,7 @@ app.put('/api/v1/books/:id', async (req, res) => {
   }
 });
 
-// Delete a book
+//Delete a book
 app.delete('/api/v1/books/:id', async (req, res) => {
   try {
     const book = await Book.findByIdAndDelete(req.params.id);
@@ -83,7 +83,7 @@ app.delete('/api/v1/books/:id', async (req, res) => {
   }
 });
 
-// Borrow a book
+//Borrow a book
 app.post('/api/v1/borrow/:id', async (req, res) => {
   try {
     const book = await Book.findById(req.params.id);
@@ -102,7 +102,7 @@ app.post('/api/v1/borrow/:id', async (req, res) => {
   }
 });
 
-// Return a book
+//Return a book
 app.post('/api/v1/return/:id', async (req, res) => {
   try {
     const book = await Book.findById(req.params.id);
@@ -120,7 +120,7 @@ app.post('/api/v1/return/:id', async (req, res) => {
   }
 });
 
-// ===== Connect to MongoDB =====
+//Connect to MongoDB
 async function startServer() {
   try {
     await mongoose.connect(process.env.MONGODB_URI);
