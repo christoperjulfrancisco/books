@@ -1,0 +1,60 @@
+openapi: 3.0.0
+info:
+  title: Library API
+  version: 1.0.0
+servers:
+  - url: /api/v1
+paths:
+  /books:
+    get:
+      summary: Get all books
+      responses:
+        '200':
+          description: OK
+    post:
+      summary: Create a book
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title: { type: string }
+                author: { type: string }
+            example:
+              title: "1984"
+              author: "George Orwell"
+      responses:
+        '201':
+          description: Created
+  /books/{id}:
+    get:
+      summary: Get book by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200': { description: OK }
+        '404': { description: Not found }
+  /books/borrow/{id}:
+    post:
+      summary: Borrow a book
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
+                borrower: { type: string }
+            example:
+              borrower: "Juan dela Cruz"
+      responses:
+        '200': { description: Borrowed }

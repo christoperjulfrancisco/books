@@ -3,11 +3,10 @@
   "version": "1.0.0",
   "description": "",
   "main": "app.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node index.js",
-    "dev": "nodemon index.js"
-  },
+ "scripts": {
+  "start": "node app.js",
+  "dev": "nodemon app.js"
+},
   "keywords": [],
   "author": "",
   "license": "ISC",
@@ -17,8 +16,9 @@
     "dotenv": "^17.2.3",
     "express": "^5.1.0",
     "helmet": "^8.1.0",
+    "joi": "^18.0.2",
     "mongodb": "^7.0.0",
-    "mongoose": "^8.20.0",
+    "mongoose": "^8.20.1",
     "swagger-ui-express": "^5.0.1",
     "yamljs": "^0.3.0"
   },
