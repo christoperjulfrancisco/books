@@ -23,7 +23,7 @@ const setupSwagger = require('./swagger');
 setupSwagger(app);
 
 app.listen(3000, () => {
-  console.log('Server running on http://localhost:3000');
+  console.log('Server running on https://books-gamma-rosy.vercel.app');
   console.log('Swagger docs at http://localhost:3000/api-docs');
 });
 
